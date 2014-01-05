@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Readit::Application.config.secret_key_base = '2ce195bdb28b527b2dafa11f360a0ca7b28fbf94965c32380bcad783d176a76f1e2af8ba62a8a4e467bf7afd8ab2569d267e66bbef96f2f0063c7bbb961f865f'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Readit::Application.config.secret_key_base = secure_token
